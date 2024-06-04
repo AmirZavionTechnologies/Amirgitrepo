@@ -17,7 +17,6 @@ from django.utils.dateparse import parse_datetime
 
 
 class ResidentViewSet(viewsets.ModelViewSet):
-    permission_classes=[IsAuthenticated]
     queryset = Resident.objects.all()
     serializer_class = ResidentSerializer
     
