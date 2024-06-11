@@ -1,12 +1,15 @@
-from django.contrib.auth.models import AbstractUser
 from django.db import models
 import uuid
+from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 
-class Resident(models.Model):
+# Create your models here.
+class Residentsdata(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE,null=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=15)
     apartment_number = models.CharField(max_length=10, unique=True)
     cnic_number = models.CharField(max_length=15, unique=True, default='00000-0000000-0')
@@ -14,12 +17,22 @@ class Resident(models.Model):
     numberofpersons=models.CharField(max_length=25,default='00000-0000000-0')
     entry_code = models.UUIDField(default=uuid.uuid4, editable=False)
 
+    def __str__(self):
+        return self.user.username
+
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name}"
+        return self.user.username
+class Visitor(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    visit_reason = models.CharField(max_length=100)
+    # Add other fields as necessary
 
-class Vehicle(models.Model):
-    owner = models.ForeignKey(Resident, on_delete=models.CASCADE, related_name='vehicles')
+    def __str__(self):
+        return self.user.username
+
+class Vehiclesdata(models.Model):
+    owner = models.ForeignKey(Residentsdata, on_delete=models.CASCADE, related_name='vehicles')
     vehicle_number = models.CharField(max_length=20, unique=True)
     vehicle_type = models.CharField(max_length=50)
     vehicle_model = models.CharField(max_length=50)
@@ -29,17 +42,7 @@ class Vehicle(models.Model):
     
     def __str__(self):
         return self.vehicle_number
-
-class Visitor(models.Model):
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    phone_number = models.CharField(max_length=15)
-    vehicle_number = models.CharField(max_length=20, null=True, blank=True)
-    visit_date = models.DateTimeField(auto_now_add=True)
-    visit_code = models.UUIDField(default=uuid.uuid4, editable=False)
-
-    def __str__(self):
-        return f"{self.first_name} {self.last_name} - {self.visit_code}"
+    
     
 class Guard(models.Model):
     badge_number = models.CharField(max_length=50, unique=True)
@@ -47,8 +50,8 @@ class Guard(models.Model):
     shift_end_time = models.TimeField()
 
     def __str__(self):
-        return self.badge_number
-    
+        return self.user.username
+        
 class User(models.Model):
     ROLE_CHOICES = (
         ('admin', 'Admin'),

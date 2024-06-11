@@ -1,7 +1,7 @@
 from rest_framework import viewsets, status
 from .models import Resident, Vehicle, Visitor, Guard, User
 from .serializers import ResidentSerializer, VehicleSerializer, VisitorSerializer, GuardSerializer, UserSerializer
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -14,6 +14,10 @@ from django.http import HttpResponse
 from reportlab.pdfgen import canvas
 import csv
 from django.utils.dateparse import parse_datetime
+from .permissions import CanViewResidentsData
+
+
+
 
 
 class ResidentViewSet(viewsets.ModelViewSet):
